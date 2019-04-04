@@ -1,0 +1,59 @@
+{
+  "name": "web-crypto",
+  "version": "1.0.0",
+  "description": "Demo project for DevoxxFr web-crypto presentation ",
+  "main": "src/index.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/server/server.js",
+    "build-client": "parcel build src/client/index.html",
+    "start-client": "parcel serve src/client/index.html -p 3001",
+    "start-server": "nodemon src/server/server.js ",
+    "prettier": "prettier --write --single-quote --trailing-comma es5 --print-width 100 --tab-width 2 --jsx-bracket-same-line \"**/*.js\""
+  },
+  "dependencies": {
+    "bcrypt": "3.0.5",
+    "bcryptjs": "2.4.3",
+    "body-parser": "1.18.3",
+    "crypto-js": "3.1.9-1",
+    "express": "4.16.4",
+    "jquery": "3.3.1",
+    "jsencrypt": "3.0.0-rc.1",
+    "lodash": "4.17.11",
+    "moment": "2.24.0",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "unibabel": "^2.1.7",
+    "uuid": "3.3.2",
+    "whatwg-fetch": "3.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.4.3",
+    "@babel/plugin-proposal-class-properties": "7.4.0",
+    "@babel/preset-env": "7.4.3",
+    "@babel/preset-react": "7.0.0",
+    "nodemon": "1.18.10",
+    "parcel-bundler": "1.12.3",
+    "prettier": "1.16.4"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": false
+        }
+      ]
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "src/clien",
+      "state.json"
+    ]
+  }
+}
