@@ -4,6 +4,8 @@ import _bcrypt from 'bcryptjs';
 
 // import { Unibabel } from 'unibabel/index';
 
+const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || window.mozCrypto;
+
 const enc = new TextEncoder();
 const dec = new TextDecoder("utf-8");
 
@@ -33,7 +35,7 @@ class RSA {
 
   encrypt(text, publicKey) {
     return this.importFromJwk(publicKey, true).then(key => {
-      return window.crypto.subtle.encrypt(
+      return webCrypto.subtle.encrypt(
         {
             name: this.rsaName,
         },
@@ -51,7 +53,7 @@ class RSA {
 
   decrypt(encdata, privateKey) {
     return this.importFromJwk(privateKey, false).then(key => {
-      return window.crypto.subtle.decrypt(
+      return webCrypto.subtle.decrypt(
         {
           name: this.rsaName,
         },
@@ -68,7 +70,7 @@ class RSA {
   }
 
   exportAsJwk(key) {
-    return window.crypto.subtle.exportKey(
+    return webCrypto.subtle.exportKey(
       "jwk", //can be "jwk" (public or private), "spki" (public only), or "pkcs8" (private only)
       key //can be a publicKey or privateKey, as long as extractable was true
     )
@@ -78,7 +80,7 @@ class RSA {
   }
 
   importFromJwk(key, pub) {
-    return window.crypto.subtle.importKey(
+    return webCrypto.subtle.importKey(
       "jwk", //can be "jwk" (public or private), "spki" (public only), or "pkcs8" (private only)
       key,
       {   //these are the algorithm options
@@ -94,7 +96,7 @@ class RSA {
   }
 
   genKeyPair() {
-    return window.crypto.subtle.generateKey({
+    return webCrypto.subtle.generateKey({
         name: this.rsaName,
         modulusLength: 2048, //can be 1024, 2048, or 4096
         publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
@@ -129,7 +131,7 @@ class AES {
   }
 
   importKey(raw) {
-    return window.crypto.subtle.importKey(
+    return webCrypto.subtle.importKey(
       "raw", //can be "jwk" or "raw"
       asciiToUint8Array(raw),
       {   //this is the algorithm options
@@ -145,7 +147,7 @@ class AES {
 
   encrypt(text, masterkey) {
     return this.deriveKey(masterkey).then(key => {
-      return window.crypto.subtle.encrypt(
+      return webCrypto.subtle.encrypt(
         {
           name: this.aesName,
           //Don't re-use counters!
@@ -167,7 +169,7 @@ class AES {
 
   decrypt(encdata, masterkey) {
     return this.deriveKey(masterkey).then(key => {
-      return window.crypto.subtle.decrypt(
+      return webCrypto.subtle.decrypt(
         {
             name: this.aesName,
             counter: new Uint8Array(16), //The same counter you used to encrypt
@@ -195,11 +197,11 @@ export function generateRandomKey() {
 }
 
 function getRandomValues(buf) {
-  if (window.crypto && window.crypto.getRandomValues) {
-      return window.crypto.getRandomValues(buf);
+  if (crypto && webCrypto.getRandomValues) {
+      return webCrypto.getRandomValues(buf);
   }
-  if (window.msCrypto && window.msCrypto.getRandomValues) {
-      return window.msCrypto.getRandomValues(buf);
+  if (window.msCrypto && window.mswebCrypto.getRandomValues) {
+      return window.mswebCrypto.getRandomValues(buf);
   }
   throw new Error('No cryptographic randomness!');
 }
