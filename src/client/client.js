@@ -60,6 +60,17 @@ class Client {
           email, message, sem
         })
       }).then(r => r.json());
+    },
+    createUser(email, name, password) {
+      return fetch(`http://127.0.0.1:8080/api/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email, name, password
+        })
+      }).then(r => r.json());
     }
   }
 
@@ -214,7 +225,8 @@ class App extends Component {
     contacts: [],
     to: '--',
     content: '',
-    state: {}
+    state: {},
+    form: {}
   };
 
   componentDidMount() {
@@ -258,6 +270,17 @@ class App extends Component {
     this.client.state().then(state => this.setState({ state }));
   }
 
+  createAccount = () => {
+    if (this.state.form.password && (this.state.form.password === this.state.form.password2)) {
+      this.client.server.createUser(this.state.form.email, this.state.form.name, this.state.form.password).then(res => {
+        this.setState({ username: this.state.form.email, password: this.state.form.password, form: {}});
+        $('#createAccountModal').modal('toggle');
+      });
+    } else {
+      window.alert("Passwords don't match !!!");
+    }
+  }
+
   renderLogin = () => {
     return (
       <form className="form-signin">
@@ -268,6 +291,43 @@ class App extends Component {
         <label htmlFor="inputPassword" className="sr-only">Password</label>
         <input type="password" id="inputPassword" className="form-control" placeholder="Password" required="" onChange={e => this.setState({ password: e.target.value })} value={this.state.password} />
         <button className="btn btn-lg btn-primary btn-block" type="button" onClick={this.doLogin}>Log in</button>
+        <button className="btn btn-lg btn-success btn-block" type="button" data-toggle="modal" data-target="#createAccountModal">Create account</button>
+        <div className="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Create account</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="email">Email address</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, email: e.target.value } })} type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
+                </div>
+                <div class="form-group">
+                  <label for="name">Name</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, name: e.target.value } })} type="email" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Enter your name" />
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, password: e.target.value } })} type="password" class="form-control" id="password" placeholder="Password" />
+                </div>
+                <div class="form-group">
+                  <label for="password2">Re-type password</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, password2: e.target.value } })} type="password" class="form-control" id="password2" placeholder="Password" />
+                </div>
+              </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" onClick={this.createAccount}>Create account</button>
+              </div>
+            </div>
+          </div>
+        </div>
         {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
       </form>
     );

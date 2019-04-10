@@ -135,6 +135,12 @@ app.get('/api/users', (req, res) => {
   res.send(Object.keys(server.users).map(k => server.users[k]).map(u => ({ email: u.email, name: u.name, publicKey: u.publicKey })));
 });
 
+app.post('/api/users', (req, res) => {
+  const { name, email, password } = req.body;
+  server.createUser(email, password, name);
+  res.status(201).send({ name, email, password });
+});
+
 app.post('/api/users/_login', (req, res) => {
   const user = server.login(req.body.email, req.body.password);
   if (user) {
