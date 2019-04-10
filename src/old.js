@@ -34,52 +34,71 @@ import CryptoJS from 'crypto-js';
 // https://coolaj86.com/articles/webcrypto-encrypt-and-decrypt-with-aes/
 // https://github.com/diafygi/webcrypto-examples/issues/8
 
-login(email, password) {
-  return this.server.login(email, password).then(res => {
-    if (res) {
-      this.email = email;
-      this.password = password;
-      this.name = res.name
-      return aes.decrypt(res.salt, this.password).then(salt => {
-        return this.decryptPrivateKey(res.privateKey, salt, this.password).then(decryptedPrivateKey => {
-          this.salt = salt;
-          this.privateKey = decryptedPrivateKey;
-          this.publicKey = res.publicKey;
-          console.log('Logged in as ' + this.email);
-          return this.loadMessage();
-        });
-      });
-    } else {
-      console.log('Bad login ...');
-      return null;
-    }
-  });
-}
-
-createAccount(name, email, password) {
-  this.email = email;
-  this.password = password;
-  this.name = name
-  return this.server.createUser(email, name, bcrypt.hashSync(password, this.generateSalt()).then(res => {
-    console.log('Generating keys ...');
-    return rsa.genKeyPair().then(pair => {
-      this.privateKey = pair.privateKey;
-      this.publicKey = pair.publicKey;
-      this.salt = this.generateSalt();
-      console.log('Sending keys to server');
-      return aes.encrypt(this.salt, this.password).then(encryptedSalt => {
-        return this.encryptPrivateKey(this.privateKey, this.salt, this.password).then(encryptedPrivateKey => {
-          return this.server.storeKey(
-            this.email,
-            encryptedSalt,
-            this.publicKey,
-            encryptedPrivateKey
-          ).then(() => {
+class Test {
+  login(email, password) {
+    return this.server.login(email, password).then(res => {
+      if (res) {
+        this.email = email;
+        this.password = password;
+        this.name = res.name
+        return aes.decrypt(res.salt, this.password).then(salt => {
+          return this.decryptPrivateKey(res.privateKey, salt, this.password).then(decryptedPrivateKey => {
+            this.salt = salt;
+            this.privateKey = decryptedPrivateKey;
+            this.publicKey = res.publicKey;
             console.log('Logged in as ' + this.email);
             return this.loadMessage();
           });
         });
+      } else {
+        console.log('Bad login ...');
+        return null;
+      }
+    });
+  }
+
+  createAccount(name, email, password) {
+    this.email = email;
+    this.password = password;
+    this.name = name
+    return this.server.createUser(email, name, bcrypt.hashSync(password, this.generateSalt()).then(res => {
+      console.log('Generating keys ...');
+      return rsa.genKeyPair().then(pair => {
+        this.privateKey = pair.privateKey;
+        this.publicKey = pair.publicKey;
+        this.salt = this.generateSalt();
+        console.log('Sending keys to server');
+        return aes.encrypt(this.salt, this.password).then(encryptedSalt => {
+          return this.encryptPrivateKey(this.privateKey, this.salt, this.password).then(encryptedPrivateKey => {
+            return this.server.storeKey(
+              this.email,
+              encryptedSalt,
+              this.publicKey,
+              encryptedPrivateKey
+            ).then(() => {
+              console.log('Logged in as ' + this.email);
+              return this.loadMessage();
+            });
+          });
+        });
       });
     });
-  });
+  }
+}
+
+
+const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || window.mozCrypto;
+
+export function generateRandomKey() {
+  return window.btoa(String.fromCharCode.apply(null, getRandomValues(new Uint8Array(16)))).trim();
+}
+
+function getRandomValues(buf) {
+  if (webCrypto && webCrypto.getRandomValues) {
+      return webCrypto.getRandomValues(buf);
+  }
+  if (window.msCrypto && window.mswebCrypto.getRandomValues) {
+      return window.mswebCrypto.getRandomValues(buf);
+  }
+  throw new Error('No cryptographic randomness!');
 }
