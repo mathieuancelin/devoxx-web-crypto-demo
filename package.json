@@ -8,7 +8,7 @@
     "node": "^11"
   },
   "scripts": {
-    "start": "yarn build-client && node src/server/server.js",
+    "start": "node src/server/server.js",
     "build-client": "parcel build src/client/index.html",
     "start-client": "parcel serve src/client/index.html -p 3001",
     "start-server": "nodemon src/server/server.js ",
