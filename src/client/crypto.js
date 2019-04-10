@@ -7,19 +7,19 @@ const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || win
 const enc = new TextEncoder();
 const dec = new TextDecoder("utf-8");
 
-function asciiToUint8Array(ascii) {
+function stringToBytes(ascii) {
   return enc.encode(ascii);
 }
 
-function bytesToHexString(bytes) {
+function bytesToBase64String(bytes) {
   return window.btoa(new Uint8Array(bytes).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')).trim();
 }
 
-function hexStringToUint8Array(hex) {
+function base64StringToBytes(hex) {
   return new Uint8Array(window.atob(hex).match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 }
 
-function bytesToASCIIString(bytes) {
+function bytesToString(bytes) {
   return dec.decode(bytes);
 }
 
@@ -34,10 +34,10 @@ class RSA {
             name: this.rsaName,
         },
         key, //from generateKey or importKey above
-        asciiToUint8Array(text),
+        stringToBytes(text),
       )
       .then((encrypted) => {
-        return bytesToHexString(encrypted);
+        return bytesToBase64String(encrypted);
       })
       .catch((err) => {
         console.error(`[RSA] Error while decrypt ${err.message}`, err);
@@ -52,10 +52,10 @@ class RSA {
           name: this.rsaName,
         },
         key, //from generateKey or importKey above
-        hexStringToUint8Array(encdata) //ArrayBuffer of the data
+        base64StringToBytes(encdata) //ArrayBuffer of the data
       )
       .then((decrypted) => {
-        return bytesToASCIIString(decrypted);
+        return bytesToString(decrypted);
       })
       .catch((err) => {
         console.error(`[RSA] Error while decrypt ${err.message}`, err);
@@ -127,7 +127,7 @@ class AES {
   importKey(raw) {
     return webCrypto.subtle.importKey(
       "raw", //can be "jwk" or "raw"
-      asciiToUint8Array(raw),
+      stringToBytes(raw),
       {   //this is the algorithm options
           name: this.aesName,
       },
@@ -150,10 +150,10 @@ class AES {
           length: 128, //can be 1-128
         },
         key, //from generateKey or importKey above
-        asciiToUint8Array(text) //ArrayBuffer of data you want to encrypt
+        stringToBytes(text) //ArrayBuffer of data you want to encrypt
       )
       .then((encrypted) => {
-        return bytesToHexString(encrypted);
+        return bytesToBase64String(encrypted);
       })
       .catch(function(err){
         console.error(`[AES] error while encrypt ${err.message}`, err);
@@ -170,10 +170,10 @@ class AES {
             length: 128, //The same length you used to encrypt
         },
         key, //from generateKey or importKey above
-        hexStringToUint8Array(encdata) //ArrayBuffer of the data
+        base64StringToBytes(encdata) //ArrayBuffer of the data
       )
       .then((decrypted) => {
-        return bytesToASCIIString(decrypted);
+        return bytesToString(decrypted);
       })
       .catch((err) => {
         console.error(`[AES] error while decrypt ${err.message}`, err);
