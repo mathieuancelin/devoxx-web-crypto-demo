@@ -40,7 +40,7 @@ class RSA {
         return bytesToBase64String(encrypted);
       })
       .catch((err) => {
-        console.error(`[RSA] Error while decrypt ${err.message}`, err);
+        console.error(`[RSA] Error while encrypt ${err.message}`, err);
       });
     });
   }
