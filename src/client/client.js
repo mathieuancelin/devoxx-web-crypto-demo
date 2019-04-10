@@ -360,8 +360,8 @@ class App extends Component {
                   <i className="fas fa-comments" />
                   <strong>Messages</strong>
                 </a>
-                <p style={{ color: 'white', marginTop: 16 }}>
-                  {this.state.name} ({this.state.email})
+                <p  onClick={e => window.location.reload()} style={{ color: 'white', marginTop: 16, cursor: 'pointer' }}>
+                  {this.state.name} ({this.state.email})  <i className="fas fa-sign-out-alt" /> 
                 </p>
               </div>
             </div>
