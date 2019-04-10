@@ -102,3 +102,23 @@ function getRandomValues(buf) {
   }
   throw new Error('No cryptographic randomness!');
 }
+
+const encrypt = new JSEncrypt();
+encrypt.setPrivateKey(privkey);
+const signature = encrypt.sign(message, CryptoJS.SHA256, 'sha256');
+
+const decrypt = new JSEncrypt();
+decrypt.setPublicKey(pubkey);
+const verified = decrypt.verify(message, signature, CryptoJS.SHA256);
+
+console.log(verified ? 'It Works!' : 'Error with signature');
+
+const encrypt = new JSEncrypt();
+encrypt.setPublicKey(pubkey);
+const ciphertext = encrypt.encrypt(message);
+
+const decrypt = new JSEncrypt();
+decrypt.setPrivateKey(privkey);
+const plaintext = decrypt.decrypt(ciphertext);
+
+console.log(plaintext == message ? 'It Works!' : 'Error with decryption');
