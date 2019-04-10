@@ -2,30 +2,24 @@ import _ from 'lodash';
 
 import _bcrypt from 'bcryptjs';
 
-// import { Unibabel } from 'unibabel/index';
-
 const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || window.mozCrypto;
 
 const enc = new TextEncoder();
 const dec = new TextDecoder("utf-8");
 
 function asciiToUint8Array(ascii) {
-  // return Unibabel.strToUtf8Arr(ascii);
   return enc.encode(ascii);
 }
 
 function bytesToHexString(bytes) {
-  // return Unibabel.arrToBase64(bytes);
-  return new Uint8Array(bytes).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+  return window.btoa(new Uint8Array(bytes).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')).trim();
 }
 
 function hexStringToUint8Array(hex) {
-  // return Unibabel.base64ToArr(hex);
-  return new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  return new Uint8Array(window.atob(hex).match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 }
 
 function bytesToASCIIString(bytes) {
-  // return Unibabel.utf8ArrToStr(bytes);
   return dec.decode(bytes);
 }
 
