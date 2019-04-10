@@ -86,7 +86,6 @@ class Client {
 
   decryptPrivateKey(encodedPrivateKey, salt, password) {
     const hash = bcrypt.hashSync(password, salt);
-    console.log('decryptPrivateKey', hash);
     return aes.decrypt(encodedPrivateKey, hash).then(pk => JSON.parse(pk));
   }
 
@@ -119,11 +118,11 @@ class Client {
             this.publicKey = pair.publicKey;
             this.salt = this.generateSalt();
             console.log('Sending keys to server');
-            return aes.encrypt(this.salt, this.password).then(encryptedPassword => {
+            return aes.encrypt(this.salt, this.password).then(encryptedSalt => {
               return this.encryptPrivateKey(this.privateKey, this.salt, this.password).then(encryptedPrivateKey => {
                 return this.server.storeKey(
                   this.email,
-                  encryptedPassword,
+                  encryptedSalt,
                   this.publicKey,
                   encryptedPrivateKey
                 ).then(() => {
