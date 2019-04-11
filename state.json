@@ -3,12 +3,12 @@
     "bob@foo.bar": {
       "email": "bob@foo.bar",
       "name": "Bobby Boby",
-      "password": "$2b$10$Hi7r0H9CGeDM.B86U4IEd.DEO7voNSbvqIFh3Qy0KUg9BJ.USRGqO"
+      "password": "$2b$10$femIU/QwYVLQqSsDmWh4IeFkc5Ujv9wOOf7VorXiTOyqGP/ktniDy"
     },
     "alice@foo.bar": {
       "email": "alice@foo.bar",
       "name": "Ally Alice",
-      "password": "$2b$10$GWRTJ9Lc9ZLArbEvM2ffoeicDtnHmQK5WXi6gSdhefAX8qF.3bAju"
+      "password": "$2b$10$oN5LpsFdGeeerOE8FY8dQ.mDtbuU3fsjCRcsfN6NyPGU3HBlS26pC"
     }
   },
   "messages": {}
