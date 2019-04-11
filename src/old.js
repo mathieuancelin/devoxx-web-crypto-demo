@@ -122,3 +122,41 @@ decrypt.setPrivateKey(privkey);
 const plaintext = decrypt.decrypt(ciphertext);
 
 console.log(plaintext == message ? 'It Works!' : 'Error with decryption');
+
+
+
+import openpgp, { message, key , stream } from 'openpgp';
+
+openpgp.message = message;
+openpgp.key = key;
+openpgp.stream = stream;
+openpgp.initWorker({ path: 'openpgp/openpgp.worker.js' });
+
+openpgp.generateKey({ 
+  numBits: 2048,
+  userIds: [{ name: 'bob', email: 'bob@foo.bar' }]
+}).then(pair => {
+  return openpgp.key.readArmored(pair.publicKeyArmored).then(keys => {
+    return openpgp.encrypt({
+      message: openpgp.message.fromText('Hello World!'),
+      publicKeys: keys.keys,
+    }).then(encrypted => {
+      return openpgp.stream.readToEnd(encrypted.data);
+    })
+  }).then(encryptedText => {
+    console.log('encryptedText', encryptedText);
+    return openpgp.key.readArmored(pair.privateKeyArmored).then(keys => {
+      return openpgp.message.readArmored(encdata).then(m => {
+        return openpgp.decrypt({
+          message: m,
+          privateKeys: keys.keys,
+        }).then(decrypted => {
+          return openpgp.stream.readToEnd(decrypted.data);
+        }).then(decryptedText => {
+          console.log('decryptedText', decryptedText);
+        });
+      });
+    });
+  });
+});
+
