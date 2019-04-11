@@ -261,7 +261,8 @@ class App extends Component {
     to: '--',
     content: '',
     state: {},
-    form: {}
+    form: {},
+    moduleName: '--'
   };
 
   componentDidMount() {
@@ -269,6 +270,7 @@ class App extends Component {
     this.client = new Client(moduleName);
     this.reload();
     this.interval = setInterval(() => this.reload(), 2000);
+    this.setState({ moduleName })
   }
 
   componentWillUnmount() {
@@ -316,6 +318,10 @@ class App extends Component {
     } else {
       window.alert("Passwords don't match !!!");
     }
+  }
+
+  cleanupAndLoad = (path) => {
+    this.client.clearState().then(e => window.location = path);
   }
 
   renderLogin = () => {
@@ -366,6 +372,12 @@ class App extends Component {
           </div>
         </div>
         {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: 40 }}>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=no-crypto")}>use no crypto</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto")}>use window.crypto</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto-lib")}>use jsencrypt</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto-openpgp")}>use openpgp.js</button>
+        </div>
       </form>
     );
   }
@@ -433,12 +445,17 @@ class App extends Component {
     return (
       <div>
         {this.renderApp()}
-        <button 
-          type="button" className="btn btn-primary btn-sm" data-toggle="modal" data-target="#state-modal" 
-          style={{ position: 'fixed', right: 135, bottom: 0, margin: 5 }}>server state</button>
-        <button 
-          onClick={e => this.client.clearState().then(e => window.location.reload())} 
-          type="button" className="btn btn-danger btn-sm" style={{ position: 'fixed', right: 0, bottom: 0, margin: 5 }}>clear server state</button>
+        <div style={{ display: 'flex', position: 'fixed', height: 45, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'space-around' }}>
+          <p style={{ marginRight: 5, marginTop: 10 }}>
+            {this.state.moduleName}
+          </p>
+          <button 
+            type="button" className="btn btn-primary btn-sm" data-toggle="modal" data-target="#state-modal" 
+            style={{ margin: 5 }}>server state</button>
+          <button 
+            onClick={e => this.client.clearState().then(e => window.location.reload())} 
+            type="button" className="btn btn-danger btn-sm" style={{ margin: 5 }}>clear server state</button>
+        </div>
         <div className="modal" id="state-modal" tabIndex="-1" role="dialog">
             <div className="modal-dialog modal-lg" role="document">
               <div className="modal-content">
