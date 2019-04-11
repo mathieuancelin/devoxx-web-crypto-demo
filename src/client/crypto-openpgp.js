@@ -38,9 +38,9 @@ class RSA {
     return Promise.resolve(key);
   }
 
-  genKeyPair(name, email) {
+  genKeyPair(size, name, email) {
     return openpgp.generateKey({ 
-      numBits: 4096,
+      numBits: size,
       userIds: [{ name, email }]
     }).then(key => {
       const privateKey = key.privateKeyArmored;

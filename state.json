@@ -3,13 +3,27 @@
     "bob@foo.bar": {
       "email": "bob@foo.bar",
       "name": "Bobby Boby",
-      "password": "$2b$10$femIU/QwYVLQqSsDmWh4IeFkc5Ujv9wOOf7VorXiTOyqGP/ktniDy"
+      "password": "$2b$10$xhqa5ooflsDymOrVb.LlueLkKLiObvpDwwhaSsMTDcVC29CF6M8Ui",
+      "salt": "U2FsdGVkX1+wXnuTphSaOb//llbcRpP7/YUFfgj4QNaRjdjYNIjYo6Xzo7zy/2Sw",
+      "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBoX4EhueLK0cDwD1zaNUmD\nfl0lQBGI3Ktu9/0g0Py67tIQBxAiQ65xqLOc3slZv835wAoqPS1FWI9Uqfgp9uIU\n+Q9HyMkT0wTw/GJUf8Ctsg4WIU9HoG//UuFPU4KxEWCtAVPreO3ioLK/DPltKskR\nQQTV7USNr6sfuKFX7xXBTDk8mBdkFL7lZ39Gh1V9AoRre3uDSpF/FozhPl7AWL5l\nVSh1e4lUlGWK3JFKxr576RXj61jL36b3+t1EsTb1yxXSHaUwG303KW+jzz+4gIMH\nO7NLLw0c8ikDH85DHrvnBgYl5ZcRkc4hh7CeLij6gDYQawdtIL/sA5u9I9E9VKGZ\nAgMBAAE=\n-----END PUBLIC KEY-----",
+      "privateKey": "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"
     },
     "alice@foo.bar": {
       "email": "alice@foo.bar",
       "name": "Ally Alice",
-      "password": "$2b$10$oN5LpsFdGeeerOE8FY8dQ.mDtbuU3fsjCRcsfN6NyPGU3HBlS26pC"
+      "password": "$2b$10$8oEuvqwTDuy8fZSVFQ09Ou8GHp127XsI8nenB2tbMZg3DrZA0sE/a"
     }
   },
-  "messages": {}
+  "messages": {
+    "bob@foo.bar": [
+      {
+        "key": "Fye1/UszG2+rOLNbaXUXDLlXm4cvcKt34ThUsR4tA8ohtxpZ9Jr5atpxIbbbZvHoL4UNUqBrCjyre50ElpBwxz3AxwYZctWNDMlRs7ZdHJOxbVFqF5t9oja7M6VWwEB4FvwTGqSo2NWqX0V/XgC4kAeLJP7lyFMXYxBoNXsAW+7EZwZWOFeTNQQhIOL2+nxW6fh26MDfhUMEX+CIvLZ5J01rutiRzZVfm/c0l4vtEORiyFqfZDKU5fkE0CP6xXGjcUGAxDq+9/yo9Lxj1QrBxW8vJN3Fy6gzHD6XzcRfNu9QsyW0ct/EdecPJ0gp7Ks2VhO+qyGF1DAS6WdIbsC+Kg==",
+        "content": "U2FsdGVkX19Ji9HQzgOi+tesWAGIwWoZvcXZtp3wzZY=",
+        "from": "bob@foo.bar",
+        "to": "bob@foo.bar",
+        "at": 1554992211059,
+        "id": "kG4XF6V8Qe+QXuA0ONMsww=="
+      }
+    ]
+  }
 }

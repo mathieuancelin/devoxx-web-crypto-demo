@@ -16,7 +16,7 @@ class RSA {
     return Promise.resolve(key);
   }
 
-  genKeyPair() {
+  genKeyPair(size, name, email) {
     return Promise.resolve({
       privateKey: 'private',
       publicKey: 'public'

@@ -4,16 +4,16 @@ import JSEncrypt from 'jsencrypt';
 
 const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || window.mozCrypto;
 
-const crypt = new JSEncrypt({ default_key_size: 2056 })
-
 class RSA {
 
   encrypt(text, publicKey) {
+    const crypt = new JSEncrypt({ default_key_size: 2048 })
     crypt.setKey(publicKey);
     return Promise.resolve(crypt.encrypt(text));
   }
 
   decrypt(encdata, privateKey) {
+    const crypt = new JSEncrypt({ default_key_size: 2048 })
     crypt.setKey(privateKey);
     return Promise.resolve(crypt.decrypt(encdata));
   }
@@ -22,7 +22,8 @@ class RSA {
     return Promise.resolve(key);
   }
 
-  genKeyPair() {
+  genKeyPair(size, name, email) {
+    const crypt = new JSEncrypt({ default_key_size: size });
     const privateKey = crypt.getPrivateKey();
     const publicKey = crypt.getPublicKey();
     return Promise.resolve({

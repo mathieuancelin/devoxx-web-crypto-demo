@@ -161,7 +161,7 @@ class Client {
         this.name = res.name
         if (!res.privateKey && !res.publicKey) {
           console.log('Generating keys ...');
-          return this.rsa.genKeyPair(name, email).then(pair => {
+          return this.rsa.genKeyPair(2048, name, email).then(pair => {
             this.privateKey = pair.privateKey;
             this.publicKey = pair.publicKey;
             this.salt = this.generateSalt();
@@ -503,7 +503,7 @@ aes.encrypt('hello', 'secret').then(enc => {
   });
 });
 
-rsa.genKeyPair('bobby', 'bobby@foo.bar').then(pair => {
+rsa.genKeyPair(4096, 'bobby', 'bobby@foo.bar').then(pair => {
   return rsa.encrypt('hello', pair.publicKey).then(enc => {
     return rsa.decrypt(enc, pair.privateKey).then(dec => {
       return console.log('dec', dec);
