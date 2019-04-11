@@ -95,23 +95,3 @@ function getRandomValues(buf) {
   }
   throw new Error('No cryptographic randomness!');
 }
-
-
-/**
- 
-aes.encrypt('hello', 'secret').then(enc => {
-  console.log('enc', enc);
-  aes.decrypt(enc, 'secret').then(dec => {
-    console.log('dec', dec);
-  });
-});
-
-rsa.genKeyPair('bobby', 'bobby@foo.bar').then(pair => {
-  return rsa.encrypt('hello', pair.publicKey).then(enc => {
-    return rsa.decrypt(enc, pair.privateKey).then(dec => {
-      return console.log('dec', dec);
-    });
-  });
-});
-
-**/
