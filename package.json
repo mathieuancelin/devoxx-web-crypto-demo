@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "private": true,
   "engines": {
-    "node": "^11"
+    "node": "^10"
   },
   "scripts": {
     "start": "node src/server/server.js",
@@ -15,6 +15,7 @@
     "prettier": "prettier --write --single-quote --trailing-comma es5 --print-width 100 --tab-width 2 --jsx-bracket-same-line \"**/*.js\""
   },
   "dependencies": {
+    "babel-polyfill": "6.26.0",
     "bcrypt": "3.0.5",
     "bcryptjs": "2.4.3",
     "body-parser": "1.18.3",
@@ -24,6 +25,7 @@
     "jsencrypt": "3.0.0-rc.1",
     "lodash": "4.17.11",
     "moment": "2.24.0",
+    "openpgp": "4.4.10",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "unibabel": "^2.1.7",

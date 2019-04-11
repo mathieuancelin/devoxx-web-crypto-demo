@@ -1,9 +1,13 @@
+import 'babel-polyfill';
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
 
-import { aes, rsa, bcrypt, generateRandomKey } from './crypto';
+import { aes, rsa, bcrypt, generateRandomKey } from './crypto-openpgp';
+// import { aes, rsa, bcrypt, generateRandomKey } from './crypto-lib';
+//import { aes, rsa, bcrypt, generateRandomKey } from './crypto';
 
 class Client {
 
@@ -124,7 +128,7 @@ class Client {
         this.name = res.name
         if (!res.privateKey && !res.publicKey) {
           console.log('Generating keys ...');
-          return rsa.genKeyPair().then(pair => {
+          return rsa.genKeyPair(name, email).then(pair => {
             this.privateKey = pair.privateKey;
             this.publicKey = pair.publicKey;
             this.salt = this.generateSalt();
@@ -292,7 +296,7 @@ class App extends Component {
         <input type="password" id="inputPassword" className="form-control" placeholder="Password" required="" onChange={e => this.setState({ password: e.target.value })} value={this.state.password} />
         <button className="btn btn-lg btn-primary btn-block" type="button" onClick={this.doLogin}>Log in</button>
         <button className="btn btn-lg btn-success btn-block" type="button" data-toggle="modal" data-target="#createAccountModal">Create account</button>
-        <div className="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div className="modal fade" id="createAccountModal" tabIndex="-1" role="dialog" aria-hidden="true">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
@@ -302,24 +306,24 @@ class App extends Component {
                 </button>
               </div>
               <div className="modal-body">
-              <form>
-                <div class="form-group">
-                  <label for="email">Email address</label>
-                  <input onChange={e => this.setState({ form: { ...this.state.form, email: e.target.value } })} type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
+              <div>
+                <div className="form-group">
+                  <label htmlFor="email">Email address</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, email: e.target.value } })} type="email" className="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
                 </div>
-                <div class="form-group">
-                  <label for="name">Name</label>
-                  <input onChange={e => this.setState({ form: { ...this.state.form, name: e.target.value } })} type="email" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Enter your name" />
+                <div className="form-group">
+                  <label htmlFor="name">Name</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, name: e.target.value } })} type="email" className="form-control" id="name" aria-describedby="nameHelp" placeholder="Enter your name" />
                 </div>
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input onChange={e => this.setState({ form: { ...this.state.form, password: e.target.value } })} type="password" class="form-control" id="password" placeholder="Password" />
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, password: e.target.value } })} type="password" className="form-control" id="password" placeholder="Password" />
                 </div>
-                <div class="form-group">
-                  <label for="password2">Re-type password</label>
-                  <input onChange={e => this.setState({ form: { ...this.state.form, password2: e.target.value } })} type="password" class="form-control" id="password2" placeholder="Password" />
+                <div className="form-group">
+                  <label htmlFor="password2">Re-type password</label>
+                  <input onChange={e => this.setState({ form: { ...this.state.form, password2: e.target.value } })} type="password" className="form-control" id="password2" placeholder="Password" />
                 </div>
-              </form>
+              </div>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>

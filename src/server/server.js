@@ -120,6 +120,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static('dist'));
+app.use('/openpgp', express.static('openpgp'));
 
 app.get('/api/state', (req, res) => {
   res.send(server.state());
