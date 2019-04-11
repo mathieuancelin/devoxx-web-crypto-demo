@@ -125,11 +125,7 @@ console.log(plaintext == message ? 'It Works!' : 'Error with decryption');
 
 
 
-import openpgp, { message, key , stream } from 'openpgp';
-
-openpgp.message = message;
-openpgp.key = key;
-openpgp.stream = stream;
+import * as openpgp from 'openpgp';
 openpgp.initWorker({ path: 'openpgp/openpgp.worker.js' });
 
 openpgp.generateKey({ 
