@@ -57,7 +57,8 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "src/clien",
+      "src/client/**",
+      "dist/**",
       "state.json"
     ]
   }

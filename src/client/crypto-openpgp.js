@@ -8,33 +8,13 @@ openpgp.initWorker({ path: 'openpgp/openpgp.worker.js' });
 
 const webCrypto = window.crypto || window.msCrypto || window.webkitCrypto || window.mozCrypto;
 
-const enc = new TextEncoder();
-const dec = new TextDecoder("utf-8");
-
-function stringToBytes(ascii) {
-  return enc.encode(ascii);
-}
-
-function bytesToBase64String(bytes) {
-  return window.btoa(new Uint8Array(bytes).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')).trim();
-}
-
-function base64StringToBytes(hex) {
-  return new Uint8Array(window.atob(hex).match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-}
-
-function bytesToString(bytes) {
-  return dec.decode(bytes);
-}
-
 class RSA {
 
   encrypt(text, publicKey) {
     return openpgp.key.readArmored(publicKey).then(keys => {
-      openpgp.encrypt({
+      return openpgp.encrypt({
         message: openpgp.message.fromText(text),
         publicKeys: keys.keys,
-        privateKeys: []
       }).then(encrypted => {
         return openpgp.stream.readToEnd(encrypted.data);
       })
@@ -43,13 +23,14 @@ class RSA {
 
   decrypt(encdata, privateKey) {
     return openpgp.key.readArmored(privateKey).then(keys => {
-      openpgp.decrypt({
-        message: openpgp.message.fromText(encdata),
-        privateKeys: [keys.keys[0]],
-        publicKeys: []
-      }).then(decrypted => {
-        return openpgp.stream.readToEnd(decrypted.data);
-      })
+      return openpgp.message.readArmored(encdata).then(m => {
+        return openpgp.decrypt({
+          message: m,
+          privateKeys: keys.keys,
+        }).then(decrypted => {
+          return openpgp.stream.readToEnd(decrypted.data);
+        })
+      });
     });
   }
 
@@ -75,26 +56,24 @@ class RSA {
 class AES {
 
   encrypt(text, masterkey) {
-    console.log('encrypt')
     return openpgp.encrypt({
       message: openpgp.message.fromText(text),
       passwords: [masterkey],
-      armor: false
-    }).then(ciphertext => {
-      const arr = openpgp.message.fromText(ciphertext).packets.write();
-      return bytesToBase64String(arr);
+      armor: true
+    }).then(encrypted => {
+      return openpgp.stream.readToEnd(encrypted.data);
     });
   }
 
   decrypt(encdata, masterkey) {
-    console.log('decrypt');
-    return openpgp.decrypt({
-      message: openpgp.message.fromBinary(base64StringToBytes(encdata)),
-      passwords: [masterkey],
-      format: 'binary' // binary
-    }).then(plaintext => {
-      console.log('then', plaintext);
-      return bytesToString(plaintext.data);
+    return openpgp.message.readArmored(encdata).then(m => {
+      return openpgp.decrypt({
+        message: m,
+        passwords: [masterkey],
+        format: 'string'
+      }).then(decrypted => {
+        return openpgp.stream.readToEnd(decrypted.data);
+      });
     });
   }
 }
@@ -116,3 +95,23 @@ function getRandomValues(buf) {
   }
   throw new Error('No cryptographic randomness!');
 }
+
+
+/**
+ 
+aes.encrypt('hello', 'secret').then(enc => {
+  console.log('enc', enc);
+  aes.decrypt(enc, 'secret').then(dec => {
+    console.log('dec', dec);
+  });
+});
+
+rsa.genKeyPair('bobby', 'bobby@foo.bar').then(pair => {
+  return rsa.encrypt('hello', pair.publicKey).then(enc => {
+    return rsa.decrypt(enc, pair.privateKey).then(dec => {
+      return console.log('dec', dec);
+    });
+  });
+});
+
+**/

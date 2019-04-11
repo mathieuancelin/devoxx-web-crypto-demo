@@ -170,6 +170,7 @@ class Client {
     const messageKey = generateRandomKey();
     return aes.encrypt(content, messageKey).then(encryptedContent => {
       return rsa.encrypt(messageKey, pubKey || this.publicKey).then(encryptedKey => {
+        console.log('encryptedKey', encryptedKey)
         return {
           key: encryptedKey,
           content: encryptedContent
