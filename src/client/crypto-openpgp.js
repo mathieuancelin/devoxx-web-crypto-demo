@@ -32,8 +32,9 @@ class RSA {
   encrypt(text, publicKey) {
     return openpgp.key.readArmored(publicKey).then(keys => {
       openpgp.encrypt({
-        message: message.fromText(text),
-        publicKeys: keys,
+        message: openpgp.message.fromText(text),
+        publicKeys: keys.keys,
+        privateKeys: []
       }).then(encrypted => {
         return openpgp.stream.readToEnd(encrypted.data);
       })
@@ -43,8 +44,9 @@ class RSA {
   decrypt(encdata, privateKey) {
     return openpgp.key.readArmored(privateKey).then(keys => {
       openpgp.decrypt({
-        message: message.fromText(encdata),
-        privateKeys: keys,
+        message: openpgp.message.fromText(encdata),
+        privateKeys: [keys.keys[0]],
+        publicKeys: []
       }).then(decrypted => {
         return openpgp.stream.readToEnd(decrypted.data);
       })
@@ -75,20 +77,19 @@ class AES {
   encrypt(text, masterkey) {
     console.log('encrypt')
     return openpgp.encrypt({
-      message: message.fromText(text),
+      message: openpgp.message.fromText(text),
       passwords: [masterkey],
       armor: false
     }).then(ciphertext => {
-      const arr = message.fromText(ciphertext).packets.write();
+      const arr = openpgp.message.fromText(ciphertext).packets.write();
       return bytesToBase64String(arr);
     });
   }
 
   decrypt(encdata, masterkey) {
-    console.log('decrypt', encdata);
-    const m = message.fromBinary(base64StringToBytes(encdata));
+    console.log('decrypt');
     return openpgp.decrypt({
-      message: m,
+      message: openpgp.message.fromBinary(base64StringToBytes(encdata)),
       passwords: [masterkey],
       format: 'binary' // binary
     }).then(plaintext => {
