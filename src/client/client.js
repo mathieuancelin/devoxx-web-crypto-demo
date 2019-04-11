@@ -320,7 +320,8 @@ class App extends Component {
     }
   }
 
-  cleanupAndLoad = (path) => {
+  cleanupAndLoad = (e, path) => {
+    e.preventDefault();
     this.client.clearState().then(e => window.location = path);
   }
 
@@ -372,11 +373,11 @@ class App extends Component {
           </div>
         </div>
         {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
-        <div style={{ display: 'flex', flexDirection: 'column', marginTop: 40 }}>
-          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=no-crypto")}>use no crypto</button>
-          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto")}>use window.crypto</button>
-          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto-lib")}>use jsencrypt</button>
-          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad("/?module=crypto-openpgp")}>use openpgp.js</button>
+        <div style={{ display: 'none', flexDirection: 'column', marginTop: 40 }}>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad(e, "/?module=no-crypto")}>use no crypto</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad(e, "/?module=crypto")}>use window.crypto</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad(e, "/?module=crypto-lib")}>use jsencrypt</button>
+          <button type="button" style={{ marginBottom: 2 }} className="btn btn-outline-secondary btn-xs" onClick={e => this.cleanupAndLoad(e, "/?module=crypto-openpgp")}>use openpgp.js</button>
         </div>
       </form>
     );
@@ -446,9 +447,20 @@ class App extends Component {
       <div>
         {this.renderApp()}
         <div style={{ display: 'flex', position: 'fixed', height: 45, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'space-around' }}>
-          <p style={{ marginRight: 5, marginTop: 10 }}>
+          <p style={{ display: 'none', marginRight: 5, marginTop: 10 }}>
             {this.state.moduleName}
           </p>
+          <div className="btn-group dropup">
+            <button type="button" style={{ width: 136, height: 35, marginTop: 5, marginRight: 5 }} className="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {this.state.moduleName}
+            </button>
+            <div className="dropdown-menu">
+              <a href="#" style={{ marginBottom: 2 }} className="dropdown-item" onClick={e => this.cleanupAndLoad(e, "/?module=no-crypto")}>use no crypto</a>
+              <a href="#" style={{ marginBottom: 2 }} className="dropdown-item" onClick={e => this.cleanupAndLoad(e, "/?module=crypto")}>use window.crypto</a>
+              <a href="#" style={{ marginBottom: 2 }} className="dropdown-item" onClick={e => this.cleanupAndLoad(e, "/?module=crypto-lib")}>use jsencrypt</a>
+              <a href="#" style={{ marginBottom: 2 }} className="dropdown-item" onClick={e => this.cleanupAndLoad(e, "/?module=crypto-openpgp")}>use openpgp.js</a>
+            </div>
+          </div>
           <button 
             type="button" className="btn btn-primary btn-sm" data-toggle="modal" data-target="#state-modal" 
             style={{ margin: 5 }}>server state</button>
