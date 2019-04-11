@@ -5,11 +5,44 @@ import ReactDOM from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
 
-import { aes, rsa, bcrypt, generateRandomKey } from './crypto-openpgp';
+// import { aes, rsa, bcrypt, generateRandomKey } from './no-crypto';
+// import { aes, rsa, bcrypt, generateRandomKey } from './crypto-openpgp';
 // import { aes, rsa, bcrypt, generateRandomKey } from './crypto-lib';
-//import { aes, rsa, bcrypt, generateRandomKey } from './crypto';
+// import { aes, rsa, bcrypt, generateRandomKey } from './crypto';
+
+import * as CryptoModuleNoCrypto from './no-crypto';
+import * as CryptoModuleOpenPgpCrypto from './crypto-openpgp';
+import * as CryptoModuleLibCrypto from './crypto-lib';
+import * as CryptoModuleCrypto from './crypto';
+
+const modules = {
+  'no-crypto': CryptoModuleNoCrypto,
+  'crypto-lib': CryptoModuleLibCrypto,
+  'crypto-openpgp': CryptoModuleOpenPgpCrypto,
+  'crypto': CryptoModuleCrypto,
+}
+
+function parseQuery() {
+  const query = window.location.search.replace('?', '');
+  const values = {};
+  if (query.trim() !== '') {
+    query.split('&').map(tuple => {
+      const parts = tuple.split('=');
+      values[parts[0]] = parts[1];
+    });
+  }
+  return values;
+}
 
 class Client {
+
+  constructor(module) {
+    const mod = modules[module] || CryptoModuleCrypto;
+    this.aes = mod.aes;
+    this.rsa = mod.rsa;
+    this.bcrypt = mod.bcrypt;
+    this.generateRandomKey = mod.generateRandomKey;
+  }
 
   server = {
     clearState() {
@@ -91,17 +124,17 @@ class Client {
   }
 
   generateSalt() {
-    return bcrypt.genSaltSync(10);
+    return this.bcrypt.genSaltSync(10);
   }
 
   encryptPrivateKey(privateKey, salt, password) {
-    const hash = bcrypt.hashSync(password, salt);
-    return aes.encrypt(JSON.stringify(privateKey), hash);
+    const hash = this.bcrypt.hashSync(password, salt);
+    return this.aes.encrypt(JSON.stringify(privateKey), hash);
   }
 
   decryptPrivateKey(encodedPrivateKey, salt, password) {
-    const hash = bcrypt.hashSync(password, salt);
-    return aes.decrypt(encodedPrivateKey, hash).then(pk => JSON.parse(pk));
+    const hash = this.bcrypt.hashSync(password, salt);
+    return this.aes.decrypt(encodedPrivateKey, hash).then(pk => JSON.parse(pk));
   }
 
   loadMessage() {
@@ -128,12 +161,12 @@ class Client {
         this.name = res.name
         if (!res.privateKey && !res.publicKey) {
           console.log('Generating keys ...');
-          return rsa.genKeyPair(name, email).then(pair => {
+          return this.rsa.genKeyPair(name, email).then(pair => {
             this.privateKey = pair.privateKey;
             this.publicKey = pair.publicKey;
             this.salt = this.generateSalt();
             console.log('Sending keys to server');
-            return aes.encrypt(this.salt, this.password).then(encryptedSalt => {
+            return this.aes.encrypt(this.salt, this.password).then(encryptedSalt => {
               return this.encryptPrivateKey(this.privateKey, this.salt, this.password).then(encryptedPrivateKey => {
                 return this.server.storeKey(
                   this.email,
@@ -149,7 +182,7 @@ class Client {
           });
         } else {
           console.log('login', res.salt, this.password)
-          return aes.decrypt(res.salt, this.password).then(salt => {
+          return this.aes.decrypt(res.salt, this.password).then(salt => {
             return this.decryptPrivateKey(res.privateKey, salt, this.password).then(decryptedPrivateKey => {
               this.salt = salt;
               this.privateKey = decryptedPrivateKey;
@@ -167,10 +200,9 @@ class Client {
   }
 
   encryptMessage(content, pubKey) {
-    const messageKey = generateRandomKey();
-    return aes.encrypt(content, messageKey).then(encryptedContent => {
-      return rsa.encrypt(messageKey, pubKey || this.publicKey).then(encryptedKey => {
-        console.log('encryptedKey', encryptedKey)
+    const messageKey = this.generateRandomKey();
+    return this.aes.encrypt(content, messageKey).then(encryptedContent => {
+      return this.rsa.encrypt(messageKey, pubKey || this.publicKey).then(encryptedKey => {
         return {
           key: encryptedKey,
           content: encryptedContent
@@ -180,8 +212,8 @@ class Client {
   }
 
   decryptMessage(message) {
-    return rsa.decrypt(message.key, this.privateKey).then(key => {
-      return aes.decrypt(message.content, key);
+    return this.rsa.decrypt(message.key, this.privateKey).then(key => {
+      return this.aes.decrypt(message.content, key);
     });
   }
 
@@ -193,7 +225,7 @@ class Client {
           encryptedMessage.from = this.email;
           encryptedMessage.to = to;
           encryptedMessage.at = Date.now();
-          encryptedMessage.id = generateRandomKey();
+          encryptedMessage.id = this.generateRandomKey();
           if (to === this.email) {
             return this.server.sendMessage(this.email, encryptedMessage);
           } else {
@@ -216,8 +248,6 @@ class Client {
 
 class App extends Component {
 
-  client = new Client();
-
   state = {
     username: 'bob@foo.bar',
     password: 'password',
@@ -235,6 +265,8 @@ class App extends Component {
   };
 
   componentDidMount() {
+    const moduleName = parseQuery().module || 'crypto';
+    this.client = new Client(moduleName);
     this.reload();
     this.interval = setInterval(() => this.reload(), 2000);
   }
@@ -361,7 +393,7 @@ class App extends Component {
           <header>
             <div className="navbar navbar-dark bg-dark shadow-sm">
               <div className="container d-flex justify-content-between">
-                <a href="#" className="navbar-brand d-flex align-items-center">
+                <a href="/" className="navbar-brand d-flex align-items-center">
                   <i className="fas fa-comments" />
                   <strong>Messages</strong>
                 </a>
@@ -380,8 +412,8 @@ class App extends Component {
                 </select>
                 <textarea style={{ marginTop: 5 }} className="form-control" value={this.state.content} onChange={e => this.setState({ content: e.target.value})} rows="3"></textarea>
                 <p>
-                  <a href="#" onClick={this.send} className="btn btn-primary my-2"><i className="fas fa-paper-plane" /> Send</a>
-                  <a href="#" onClick={this.reload} className="btn btn-success my-2" style={{ marginLeft: 5 }}><i className="fas fa-sync-alt" /> Reload messages</a>
+                  <button type="button" onClick={this.send} className="btn btn-primary my-2"><i className="fas fa-paper-plane" /> Send</button>
+                  <button type="button" onClick={this.reload} className="btn btn-success my-2" style={{ marginLeft: 5 }}><i className="fas fa-sync-alt" /> Reload messages</button>
                 </p>
               </div>
             </section>
