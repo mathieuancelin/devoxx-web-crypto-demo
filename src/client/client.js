@@ -46,7 +46,7 @@ class Client {
 
   server = {
     clearState() {
-      return fetch(`http://127.0.0.1:8080/api/state`, {
+      return fetch(`/api/state`, {
         method: 'DELETE',
         headers: {
           'Accept': 'application/json'
@@ -54,16 +54,16 @@ class Client {
       }).then(r => r.json());
     },
     state() {
-      return fetch(`http://127.0.0.1:8080/api/state`).then(r => r.json());
+      return fetch(`/api/state`).then(r => r.json());
     },
     users() {
-      return fetch(`http://127.0.0.1:8080/api/users`).then(r => r.json());
+      return fetch(`/api/users`).then(r => r.json());
     },
     loadMessages(email) {
-      return fetch(`http://127.0.0.1:8080/api/users/${email}/messages`).then(r => r.json());
+      return fetch(`/api/users/${email}/messages`).then(r => r.json());
     },
     login(email, password) {
-      return fetch(`http://127.0.0.1:8080/api/users/_login`, {
+      return fetch(`/api/users/_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -74,7 +74,7 @@ class Client {
       }).then(r => r.json());
     },
     storeKey(email, salt, publicKey, privateKey) {
-      return fetch(`http://127.0.0.1:8080/api/users/${email}/key`, {
+      return fetch(`/api/users/${email}/key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -85,10 +85,10 @@ class Client {
       }).then(r => r.json());
     },
     getPublicKey(email) {
-      return fetch(`http://127.0.0.1:8080/api/users/${email}/key`).then(r => r.json());
+      return fetch(`/api/users/${email}/key`).then(r => r.json());
     },
     sendMessage(email, message, sem) {
-      return fetch(`http://127.0.0.1:8080/api/users/${email}/messages`, {
+      return fetch(`/api/users/${email}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ class Client {
       }).then(r => r.json());
     },
     createUser(email, name, password) {
-      return fetch(`http://127.0.0.1:8080/api/users`, {
+      return fetch(`/api/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -328,7 +328,6 @@ class App extends Component {
   renderLogin = () => {
     return (
       <form className="form-signin">
-        <img className="mb-4" src="/docs/4.2/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72" />
         <h1 className="h3 mb-3 font-weight-normal">Please log in</h1>
         <label htmlFor="inputEmail" className="sr-only">Email address</label>
         <input type="email" id="inputEmail" className="form-control" placeholder="Email address" required="" onChange={e => this.setState({ username: e.target.value })} value={this.state.username} />

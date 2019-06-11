@@ -1,10 +1,17 @@
 const fs = require('fs');
+const https = require('https');
 
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const { bcrypt, rsa, aes } = require('./crypto');
+
+const options = {
+  key: fs.readFileSync("./certs/cert.key"),
+  cert: fs.readFileSync("./certs/cert.cer"),
+  ca: fs.readFileSync("./certs/ca.cer"),
+};
 
 class Server {
   
@@ -108,6 +115,7 @@ class Server {
 
 const app = express();
 const port = process.env.PORT || 8080;
+const httpsPort = process.env.HTTPS_PORT || 8443;
 let server = new Server(true);
 
 app.use(bodyParser.json());
@@ -200,4 +208,8 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
   console.log(`web-crypto-demo listening on port ${port}!`);
+});
+
+https.createServer(options, app).listen(httpsPort, (e, a) => {
+  console.log(`web-crypto-demo listening on port ${httpsPort}!`);
 });

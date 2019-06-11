@@ -90,6 +90,7 @@ class RSA {
   }
 
   genKeyPair(size, name, email) {
+    console.log(webCrypto);
     return webCrypto.subtle.generateKey({
         name: this.rsaName,
         modulusLength: size, //can be 1024, 2048, or 4096
